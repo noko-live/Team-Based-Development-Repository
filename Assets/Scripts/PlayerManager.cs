@@ -39,4 +39,9 @@ public class PlayerManager : MonoBehaviour
             Debug.Log("Player " + playersInput[activeKeyIndex] + " pressed.");
         }
     }
+
+    public KeyCode GetActiveKey()
+    {
+        return playersInput[activeKeyIndex];
+    }
 }

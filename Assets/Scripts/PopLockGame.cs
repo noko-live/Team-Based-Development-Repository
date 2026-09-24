@@ -4,21 +4,28 @@ using UnityEngine.InputSystem;
 public class PopTheLockController : MonoBehaviour
 {
     [Header("Rotation Settings")]
-    [SerializeField] private float rotationSpeed = 150f;    
+    [SerializeField] private float rotationSpeed = 150f;
 
     [Header("Game Reference Visuals")]
     [SerializeField] private Transform targetDot; // The visual target marker
     [SerializeField] private float orbitRadius = 2.0f; // Distance of dot to center
 
-
     [Header("Mechanics")]
     [SerializeField] private float hitWindow = 12f; // The "hit window" size
 
+    [Header("Player Manager")]
+    private PlayerManager playerManager; // Reference to the PlayerManager script
+
     private float currentSpeed;
     private bool isClockwise = true;
-    private float targetAngle;  
+    private float targetAngle;
     private int score = 0;
     private bool isGameOver = false;
+
+    private void Awake()
+    {
+        playerManager = FindObjectOfType<PlayerManager>();
+    }
 
     private void Start()
     {
@@ -34,19 +41,40 @@ public class PopTheLockController : MonoBehaviour
         transform.Rotate(Vector3.forward, currentSpeed * directionModifier * Time.deltaTime);
     }
 
-    // 2. Called by the New Input System (Player Input Component)
+    // New version of OnTap to check for the active key from PlayerManager
     public void OnTap(InputAction.CallbackContext context)
     {
         // Only trigger on the initial press (started/performed state)
         if (!context.performed) return;
-
         if (isGameOver)
         {
             RestartGame();
             return;
         }
+        // Check if the pressed key is the active key from PlayerManager
+        KeyCode pressedKey = KeyCode.None;
+        if (context.control.device is Keyboard)
+        {
+            pressedKey = MapInputControlToKeyCode(context.control.name);
+        }
+        if (pressedKey == playerManager.GetActiveKey())
+        {
+            CheckHit();
+        }
+    }
 
-        CheckHit();
+    // Helper method to map Input System key names to KeyCode
+    private KeyCode MapInputControlToKeyCode(string controlName)
+    {
+        switch (controlName.ToLower())
+        {
+            case "z": return KeyCode.Z;
+            case "v": return KeyCode.V;
+            case "m": return KeyCode.M;
+            case "slash": return KeyCode.Slash;
+            // Add more mappings as needed
+            default: return KeyCode.None;
+        }
     }
 
     private void CheckHit()
@@ -78,25 +106,23 @@ public class PopTheLockController : MonoBehaviour
     }
 
     private void SpawnNewTarget()
-{
-    // 1. Pick a random target angle (0 to 360)
-    targetAngle = Random.Range(0f, 360f);
-
-    if (targetDot != null)
     {
-        // 2. Add 90 degrees to align Trigonometry (3 o'clock) with Unity Rotation (12 o'clock)
-        float visualAngle = targetAngle + 90f;
-        float radians = visualAngle * Mathf.Deg2Rad;
-        
-        float x = Mathf.Cos(radians) * orbitRadius;
-        float y = Mathf.Sin(radians) * orbitRadius;
+        // 1. Pick a random target angle (0 to 360)
+        targetAngle = Random.Range(0f, 360f);
 
-        // 3. Move the target dot to the corrected location
-        targetDot.position = new Vector3(x, y, 0f);
+        if (targetDot != null)
+        {
+            // 2. Add 90 degrees to align Trigonometry (3 o'clock) with Unity Rotation (12 o'clock)
+            float visualAngle = targetAngle + 90f;
+            float radians = visualAngle * Mathf.Deg2Rad;
+
+            float x = Mathf.Cos(radians) * orbitRadius;
+            float y = Mathf.Sin(radians) * orbitRadius;
+
+            // 3. Move the target dot to the corrected location
+            targetDot.position = new Vector3(x, y, 0f);
+        }
     }
-}
-
-
 
     private void GameOver()
     {
