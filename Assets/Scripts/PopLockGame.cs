@@ -5,7 +5,8 @@ using TMPro;
 public class PopTheLockController : MonoBehaviour
 {
     [Header("Rotation Settings")]
-    [SerializeField] private float rotationSpeed = 150f;
+    [SerializeField] private float originalRotationSpeed = 150f;
+    [SerializeField] private float increaseRotationSpeed = 10f;
 
     [Header("Game Reference Visuals")]
     [SerializeField] private Transform targetDot; // The visual target marker
@@ -117,7 +118,7 @@ public class PopTheLockController : MonoBehaviour
 
         // Reverse direction and spawn a new target point
         isClockwise = !isClockwise;
-        rotationSpeed += 10f; // Increase speed for added challenge
+        currentSpeed += increaseRotationSpeed;
         SpawnNewTarget();
     }
 
@@ -149,7 +150,7 @@ public class PopTheLockController : MonoBehaviour
     private void ResetGameSettings()
     {
         score = 0;
-        currentSpeed = rotationSpeed;
+        currentSpeed = originalRotationSpeed;
         isClockwise = true;
         isGameOver = false;
         transform.rotation = Quaternion.identity; // Reset indicator position to top (0 degrees)
