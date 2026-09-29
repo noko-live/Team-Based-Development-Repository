@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using TMPro;
 
 public class PopTheLockController : MonoBehaviour
 {
@@ -14,7 +15,7 @@ public class PopTheLockController : MonoBehaviour
     [SerializeField] private float hitWindow = 12f; // The "hit window" size
 
     [Header("Player Manager")]
-    private PlayerManager playerManager; // Reference to the PlayerManager script
+    [SerializeField] private PlayerManager playerManager; // assigned in Inspector 
 
     private float currentSpeed;
     private bool isClockwise = true;
@@ -22,13 +23,18 @@ public class PopTheLockController : MonoBehaviour
     private int score = 0;
     private bool isGameOver = false;
 
-    private void Awake()
-    {
-        playerManager = FindObjectOfType<PlayerManager>();
-    }
-
     private void Start()
     {
+        // Try to find PlayerManager if not assigned in the Inspector
+        if (playerManager == null)
+        {
+            playerManager = Object.FindFirstObjectByType<PlayerManager>();
+            if (playerManager == null)
+            {
+                Debug.LogWarning("PopTheLockController: PlayerManager not assigned.");
+            }
+        }
+
         ResetGameSettings();
     }
 
@@ -51,12 +57,21 @@ public class PopTheLockController : MonoBehaviour
             RestartGame();
             return;
         }
-        // Check if the pressed key is the active key from PlayerManager
+
+        // Map key if keyboard; otherwise allow the hit if no PlayerManager is present
         KeyCode pressedKey = KeyCode.None;
         if (context.control.device is Keyboard)
         {
             pressedKey = MapInputControlToKeyCode(context.control.name);
         }
+
+        if (playerManager == null)
+        {
+            // No PlayerManager — treat any valid input as a trigger
+            CheckHit();
+            return;
+        }
+
         if (pressedKey == playerManager.GetActiveKey())
         {
             CheckHit();
@@ -102,6 +117,7 @@ public class PopTheLockController : MonoBehaviour
 
         // Reverse direction and spawn a new target point
         isClockwise = !isClockwise;
+        rotationSpeed += 10f; // Increase speed for added challenge
         SpawnNewTarget();
     }
 

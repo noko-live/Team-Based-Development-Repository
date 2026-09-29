@@ -1,7 +1,7 @@
 using UnityEngine;
-using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 
 public class PlayerManager : MonoBehaviour
 {
@@ -11,7 +11,10 @@ public class PlayerManager : MonoBehaviour
     [Header("Coroutine Timer")]
     [SerializeField] private float timeCycle = 3.0f;
 
+
+    [Header("Player Display")]
     [SerializeField] private int activeKeyIndex = 0;
+    [SerializeField] private TextMeshProUGUI activePlayerText;
 
     private void Start()
     {
@@ -26,6 +29,8 @@ public class PlayerManager : MonoBehaviour
             activeKeyIndex = Random.Range(0, keys.Length);
 
             Debug.Log("Active key: " + keys[activeKeyIndex]);
+
+            activePlayerText.text = "Active Player: " + keys[activeKeyIndex].ToString();
 
             yield return new WaitForSeconds(timeCycle);
         }
