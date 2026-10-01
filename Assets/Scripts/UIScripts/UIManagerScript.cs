@@ -7,11 +7,23 @@ public class UIManagerScript : MonoBehaviour
 {
 
     public List<GameObject> PlayerStars;
+    public Animator UIAnimator
+
+
 
     void Start() 
     {
         UIDefaults();    
+
     }
+
+    [ContextMenu("MakeCurtainGoUp")]
+    void MakeCurtainGoUp()
+    {
+        UIAnimator.SetTrigger("CurtainUp");
+    }
+
+
 
     [ContextMenu("Hide Stars")]
     void HideStars()
