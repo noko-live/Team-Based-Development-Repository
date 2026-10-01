@@ -288,7 +288,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: '::'
   cannonBall: {fileID: 5483755827502506787, guid: a92baed148609454d80a9cb91e4e08b2, type: 3}
-  spawnPos: {x: 0, y: 0, z: 0}
+  spawnPos: {fileID: 1455069390}
   spawnInterval: 3
 --- !u!212 &1455069389
 SpriteRenderer:
@@ -374,8 +374,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1940261452}
   - component: {fileID: 1940261451}
-  - component: {fileID: 1940261450}
   - component: {fileID: 1940261449}
+  - component: {fileID: 1940261450}
   - component: {fileID: 1940261453}
   m_Layer: 0
   m_Name: Player
@@ -410,7 +410,7 @@ Rigidbody2D:
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
-  m_Constraints: 0
+  m_Constraints: 2
 --- !u!61 &1940261450
 BoxCollider2D:
   m_ObjectHideFlags: 0

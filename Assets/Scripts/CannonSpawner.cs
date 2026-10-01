@@ -6,7 +6,7 @@ public class CannonSpawner : MonoBehaviour
     [SerializeField] private GameObject cannonBall;
 
     [Header("Spawn Position")]
-    [SerializeField] private Vector3 spawnPos;
+    [SerializeField] private Transform spawnPos;
 
     [Header("Spawn Time")]
     [SerializeField] private float spawnInterval = 1.0f;    //Spawn interval for cannon
@@ -15,8 +15,8 @@ public class CannonSpawner : MonoBehaviour
 
     void Start()
     {
-        if (spawnPos == Vector3.zero)
-            spawnPos = transform.position;
+        if (spawnPos == null)
+            spawnPos = transform;
     }
 
     void Update()
@@ -32,8 +32,6 @@ public class CannonSpawner : MonoBehaviour
 
     void SpawnObject()
     {
-        GameObject spawned = Instantiate(cannonBall, spawnPos, Quaternion.identity);
-        // Optional: add to this spawner as a child
-        spawned.transform.SetParent(transform);
+        Instantiate(cannonBall, spawnPos.position, Quaternion.identity);
     }
 }
