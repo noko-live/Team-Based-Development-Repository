@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PlayerSelectMenu : MonoBehaviour
 {
@@ -21,6 +22,12 @@ public class PlayerSelectMenu : MonoBehaviour
 
         // Update the visual GameObject to match the new state
         activeIndicators[playerIndex].SetActive(!currentState);
+    }
+
+    //Screw it: Ready button
+    public void StartNextScene()
+    {
+        SceneManager.LoadScene("CannonSprint"); //Jump minigame
     }
 
     private void RefreshAllIndicators()

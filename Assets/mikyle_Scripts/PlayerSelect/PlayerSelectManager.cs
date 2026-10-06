@@ -65,6 +65,8 @@ public class PlayerSelectManager : MonoBehaviour
         return activePlayerIndexes;
     }
 
+
+    //Helper Methods
     private void EnsureAtLeastOnePlayerIsActive()
     {
         for (int playerIndex = 0; playerIndex < activePlayers.Length; playerIndex++)
