@@ -7,55 +7,65 @@ using UnityEngine.UI;
 
 public class UIManagerScript : MonoBehaviour
 {
+    public static UIManagerScript Instance;
+
+
     public List<GameObject> PlayerStars;
-    public Animator UIAnimator;
+    public Animator CurtainAnimator;
     public RawImage GameRenderTexture;
+    public GameObject CameraUI;
+    public GameObject PlayerSelectScreen;
+    public GameObject TitleScreen;
 
-/*
-    To add a new game to the list:
+    Minigame_ManagerScript mg_manager;
 
-    1. Create a new scene and create your game. Refer to other scenes for input.
-    2. Create a render texture: Create -> Rendering -> RenderTexture, name it "NameOfGameHere_RENDERTEXTURE".
-    3. In your game scene enter the camera object:
-         -Remove the "Audio Listener" component
-         -Go to the Output tab in the Camera Component
-         -Set the "Output Texture" to your new created render texture
-    4. Return to the UI Scene (with the curtains)
-        -Go to the UIManager game object
-        -Add your new rendertexture to the "gameRenderTextureList"
-    5. Return to the UIManagerScript (this)
-        -Add your game name to the "gameList" enum
-        -Under the LoadGame function add a new case, updating the scene name and number to match your game
 
-*/
-
-    //Add new game to enum list here, Numbering follows unity array (PopTheLock = 0, CanonSprint = 1)
-    enum gameList
+    private void Awake()
     {
-        PopTheLock,
-        CanonSprint
+        Instance = this;
     }
 
-    gameList _gameList;
 
-    public List<Texture> gameRenderTextureList;
-
-    void Start() 
+    void Start()
     {
-        UIDefaults();    
-        SceneManager.LoadScene("SampleScene", LoadSceneMode.Additive);
+        UIDefaults();
+        mg_manager = Minigame_ManagerScript.Instance;
+    }
+
+
+
+
+    void UIDefaults()
+    {
+        HideStars();
+        TitleScreen.SetActive(true);
+    }
+
+
+    public void ShowPlayerSelect()
+    {
+        CameraUI.SetActive(false);
+        TitleScreen.SetActive(false);
+
+
+        PlayerSelectScreen.SetActive(true);
     }
 
     [ContextMenu("MakeCurtainGoUp")]
-    void MakeCurtainGoUp()
+    public void MakeCurtainGoUp()
     {
-        UIAnimator.SetTrigger("CurtainUp");
+        CurtainAnimator.SetTrigger("CurtainUp");
+    }
+
+    [ContextMenu("MakeCurtainGoDown")]
+    public void MakeCurtainGoDown()
+    {
+        CurtainAnimator.SetTrigger("CurtainDown");
     }
 
 
-
     [ContextMenu("Hide Stars")]
-    void HideStars()
+    public void HideStars()
     {
         foreach (GameObject obj in PlayerStars)
         {
@@ -64,7 +74,7 @@ public class UIManagerScript : MonoBehaviour
     }
 
     [ContextMenu("Show Stars")]
-    void ShowStars()
+    public void ShowStars()
     {
         foreach (GameObject obj in PlayerStars)
         {
@@ -73,30 +83,26 @@ public class UIManagerScript : MonoBehaviour
     }
 
 
-    void UIDefaults()
+    public void HideTitle()
     {
-        HideStars();
+        TitleScreen.SetActive(false);
     }
 
-    void LoadGame(gameList game)
+    public void ShowTitle()
     {
-        switch(_gameList)
-        {
-            case gameList.PopTheLock:
-                    SceneManager.LoadScene("SampleScene", LoadSceneMode.Additive);
-                    GameRenderTexture.texture = gameRenderTextureList[0];
-                    break;
-            
-            /*
-            //EXAMPLE
-            case gameList.NameOfGameEnumHERE:
-                    SceneManager.LoadScene("SCENENAMEHERE", LoadSceneMode.Additive);
-                    GameRenderTexture.texture = gameRenderTextureList[0]; // <-- use new number accourding to array
-                    break;
-            */
-        }
-
+        TitleScreen.SetActive(true);
     }
+
+
+    public void PlayerSelectReady()
+    {
+        TitleScreen.SetActive(false);
+        PlayerSelectScreen.SetActive(false);
+        CameraUI.SetActive(true);
+
+        mg_manager.StartGame();
+    }
+
 
 
 }

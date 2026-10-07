@@ -16,14 +16,14 @@ public class PlayerJump : MonoBehaviour
         public float groundCheckRadius = 0.2f;
 
         private Rigidbody2D rb;
-        private bool isGrounded;
+        public bool isGrounded;
 
         void Awake()
         {
             rb = GetComponent<Rigidbody2D>();
             if (rb == null)
             {
-                Debug.LogError("Rigidbody2D missing! Please add one to the player.");
+                Debug.LogError("Rigidbody2D missing! Please add one to the player. " + gameObject.name);
             }
         }
 
