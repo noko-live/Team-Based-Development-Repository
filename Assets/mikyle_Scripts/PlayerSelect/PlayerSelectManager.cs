@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PlayerSelectManager : MonoBehaviour
 {
@@ -32,22 +33,20 @@ public class PlayerSelectManager : MonoBehaviour
 
     public bool IsPlayerActive(int playerIndex)
     {
-        if (!IsValidPlayerIndex(playerIndex))
-        {
-            return false;
-        }
-
-        return activePlayers[playerIndex];
+        return IsValidPlayerIndex(playerIndex) && activePlayers[playerIndex];
     }
 
     public void SetPlayerActive(int playerIndex, bool isActive)
     {
-        if (!IsValidPlayerIndex(playerIndex))
+        if (IsValidPlayerIndex(playerIndex))
         {
-            return;
+            activePlayers[playerIndex] = isActive;
         }
+    }
 
-        activePlayers[playerIndex] = isActive;
+    public void LoadMinigame(string sceneName)
+    {
+        SceneManager.LoadScene(sceneName);
     }
 
     public List<int> GetActivePlayerIndexes()
@@ -65,8 +64,6 @@ public class PlayerSelectManager : MonoBehaviour
         return activePlayerIndexes;
     }
 
-
-    //Helper Methods
     private void EnsureAtLeastOnePlayerIsActive()
     {
         for (int playerIndex = 0; playerIndex < activePlayers.Length; playerIndex++)

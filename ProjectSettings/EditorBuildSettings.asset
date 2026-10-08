@@ -6,17 +6,14 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/PlayerSelect.unity
+    path: Assets/mikyle_Scenes/PlayerSelect.unity
     guid: 6edcec3dc7588eb42aa23f1082bae023
   - enabled: 1
-    path: Assets/Scenes/CannonSprint.unity
+    path: Assets/mikyle_Scenes/CannonSprint.unity
     guid: 333796c224299b040b3c3a9d6203aac1
-  - enabled: 1
-    path: Assets/Scenes/SampleScene.unity
+  - enabled: 0
+    path: Assets/mikyle_Scenes/SampleScene.unity
     guid: 99c9720ab356a0642a771bea13969a05
-  - enabled: 1
-    path: Assets/Scenes/GameScene.unity
-    guid: e0de0227fe610ff4faab124883f181cc
   m_configObjects:
     com.unity.input.settings: {fileID: 11400000, guid: 38549134fccfa0a40a025f9498343a18, type: 2}
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
