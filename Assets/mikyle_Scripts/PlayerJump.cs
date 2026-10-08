@@ -6,6 +6,9 @@ public class PlayerJump : MonoBehaviour
     [Header("Player Settings")]
     [SerializeField] private int playerIndex;
 
+    [Header("Game Manager")]
+    [SerializeField] private JumpGameManager jumpGameManager;
+
     [Header("Jump Settings")]
     [SerializeField] private float jumpForce = 5.0f;
     [SerializeField] private LayerMask groundLayer;
@@ -58,11 +61,16 @@ public class PlayerJump : MonoBehaviour
         jumpKey = key;
     }
 
+    public void SetGameManager(JumpGameManager gameManager)
+    {
+        jumpGameManager = gameManager;
+    }
+
     public void RegisterSuccessfulJump()
     {
-        if (JumpGameManager.Instance != null)
+        if (jumpGameManager != null)
         {
-            JumpGameManager.Instance.AddPoint(playerIndex);
+            jumpGameManager.AddPoint(playerIndex);
         }
 
         onSuccessfulJump?.Invoke();
@@ -70,9 +78,9 @@ public class PlayerJump : MonoBehaviour
 
     public void RegisterCannonballHit()
     {
-        if (JumpGameManager.Instance != null)
+        if (jumpGameManager != null)
         {
-            JumpGameManager.Instance.RegisterPlayerHit(playerIndex);
+            jumpGameManager.RegisterPlayerHit(playerIndex);
         }
 
         onCannonballHit?.Invoke();

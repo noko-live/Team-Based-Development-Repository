@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class CannonBallMove : MonoBehaviour
@@ -11,61 +12,71 @@ public class CannonBallMove : MonoBehaviour
     [SerializeField] private Collider2D cannonballCollider;
 
     private Rigidbody2D rb;
-    private bool hasResolved;
+    private readonly HashSet<PlayerJump> resolvedPlayers = new HashSet<PlayerJump>();
 
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
+
+        if (cannonballCollider == null)
+        {
+            cannonballCollider = GetComponent<Collider2D>();
+        }
     }
 
     private void Start()
     {
-        rb.linearVelocity = -transform.right * cannonBallSpeed;
+        if (rb != null)
+        {
+            rb.linearVelocity = -transform.right * cannonBallSpeed;
+        }
+
         Destroy(gameObject, lifeTime);
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (hasResolved)
+        PlayerJump playerJump =
+            collision.gameObject.GetComponentInParent<PlayerJump>();
+
+        if (playerJump == null || resolvedPlayers.Contains(playerJump))
+        {
+            return;
+        }
+
+        resolvedPlayers.Add(playerJump);
+        playerJump.RegisterCannonballHit();
+
+        Destroy(gameObject);
+    }
+
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (cannonballCollider == null)
         {
             return;
         }
 
         PlayerJump playerJump =
-            collision.gameObject.GetComponentInParent<PlayerJump>();
+            other.GetComponentInParent<PlayerJump>();
 
-        if (playerJump != null)
-        {
-            hasResolved = true;
-            playerJump.RegisterCannonballHit(); // Player is hit by the cannonball
-            Destroy(gameObject);
-        }
-    }
-
-    private void OnTriggerEnter2D(Collider2D other)
-    {
-        /*  Second collider detect the player if they jump over cannonball. */
-
-        if (hasResolved || cannonballCollider == null)
+        if (playerJump == null || resolvedPlayers.Contains(playerJump))
         {
             return;
         }
 
-        PlayerJump playerJump = other.GetComponentInParent<PlayerJump>();
-
-        if (playerJump == null)
-        {
-            return;
-        }
-
-        bool playerIsAboveCannonball = other.bounds.min.y > cannonballCollider.bounds.max.y;
+        bool playerIsAboveCannonball =
+            other.bounds.min.y > cannonballCollider.bounds.max.y;
 
         if (!playerIsAboveCannonball)
         {
             return;
         }
 
-        hasResolved = true;
+        resolvedPlayers.Add(playerJump);
         playerJump.RegisterSuccessfulJump();
+
+        // Do not destroy the cannonball here.
+        // Other players must still be able to jump over it.
     }
 }
