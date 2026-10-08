@@ -2,31 +2,50 @@ using UnityEngine;
 
 public class JumpManagerScript : MonoBehaviour
 {
-    [Header("Players Active")]
-    [Tooltip("Indicates which players are active in this minigame.")]
-    public GameObject[] activePlayers = new GameObject[4];
+    [Header("Player Objects")]
+    [Tooltip("Players are ordered as P1, P2, P3, and P4.")]
+    [SerializeField] private GameObject[] playerObjects = new GameObject[4];
+
+    [Header("Player Jump Keys")]
+    [SerializeField] private KeyCode[] jumpKeys =
+    {
+        KeyCode.Z,
+        KeyCode.V,
+        KeyCode.M,
+        KeyCode.Slash
+    };
+
     private void Start()
     {
-        for (int playerIndex = 0; playerIndex < 4; playerIndex++)
-        {
-            if (PlayerSelectManager.Instance.IsPlayerActive(playerIndex))
-            {
-                EnablePlayer(playerIndex);
-            }
-        }
+        ApplyPlayerStates();
     }
 
-    private void EnablePlayer(int playerIndex)
+    private void ApplyPlayerStates()
     {
-        // Activate player's body as it loops through Instance
-        if (activePlayers[playerIndex] != null)
+        for (int playerIndex = 0; playerIndex < playerObjects.Length; playerIndex++)
         {
-            for (int i =  0; i < activePlayers.Length; i++)
+            if (playerObjects[playerIndex] == null)
             {
-                activePlayers[i].SetActive(true);
+                continue;
             }
+
+            bool isPlayerActive = PlayerSelectManager.Instance != null &&
+                                  PlayerSelectManager.Instance.IsPlayerActive(playerIndex);
+
+            PlayerJump playerJump =
+                playerObjects[playerIndex].GetComponentInChildren<PlayerJump>(true);
+
+            if (playerJump != null)
+            {
+                playerJump.SetPlayerIndex(playerIndex);
+
+                if (playerIndex < jumpKeys.Length)
+                {
+                    playerJump.SetJumpKey(jumpKeys[playerIndex]);
+                }
+            }
+
+            playerObjects[playerIndex].SetActive(isPlayerActive);
         }
-        
-        Debug.Log($"Player {playerIndex + 1} is active in this minigame.");
     }
 }

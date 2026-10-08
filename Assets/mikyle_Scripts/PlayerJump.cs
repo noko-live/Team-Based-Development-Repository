@@ -1,59 +1,108 @@
 using UnityEngine;
+using UnityEngine.Events;
 
 public class PlayerJump : MonoBehaviour
 {
-        [Header("Jump Settings")]
-        [Tooltip("Force applied when jumping.")]
-        public float jumpForce = 5f;
+    [Header("Player Settings")]
+    [SerializeField] private int playerIndex;
 
-        [Tooltip("Layers considered as ground.")]
-        public LayerMask groundLayer;
+    [Header("Jump Settings")]
+    [SerializeField] private float jumpForce = 5.0f;
+    [SerializeField] private LayerMask groundLayer;
 
-        [Header("Ground Check")]
-        [Tooltip("Position to check if player is grounded.")]
-        public Transform groundCheck;
-        [Tooltip("Radius of the ground check circle.")]
-        public float groundCheckRadius = 0.2f;
+    [Header("Ground Check")]
+    [SerializeField] private Transform groundCheck;
+    [SerializeField] private float groundCheckRadius = 0.2f;
 
-        private Rigidbody2D rb;
-        private bool isGrounded;
+    [Header("Keyboard Input")]
+    [SerializeField] private KeyCode jumpKey;
 
-        void Awake()
+    [Header("Jump Events")]
+    [SerializeField] private UnityEvent onSuccessfulJump;
+    [SerializeField] private UnityEvent onCannonballHit;
+
+    private Rigidbody2D rb;
+    private bool isGrounded;
+
+    private void Awake()
+    {
+        rb = GetComponent<Rigidbody2D>();
+    }
+
+    private void Update()
+    {
+        if (rb == null || groundCheck == null)
         {
-            rb = GetComponent<Rigidbody2D>();
-            if (rb == null)
-            {
-                Debug.LogError("Rigidbody2D missing! Please add one to the player.");
-            }
+            return;
         }
 
-        void Update()
-        {
-            // Check if player is grounded
-            isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer);
+        isGrounded = Physics2D.OverlapCircle(
+            groundCheck.position,
+            groundCheckRadius,
+            groundLayer
+        );
 
-            // Jump when space is pressed and player is grounded
-            if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
-            {
-                Jump();
-            }
+        if (Input.GetKeyDown(jumpKey))
+        {
+            Jump();
+        }
+    }
+
+    public void SetPlayerIndex(int index)
+    {
+        playerIndex = index;
+    }
+
+    public void SetJumpKey(KeyCode key)
+    {
+        jumpKey = key;
+    }
+
+    public void RegisterSuccessfulJump()
+    {
+        if (JumpGameManager.Instance != null)
+        {
+            JumpGameManager.Instance.AddPoint(playerIndex);
         }
 
-        /// <summary>
-        /// Applies upward force to make the player jump.
-        /// </summary>
-        private void Jump()
+        onSuccessfulJump?.Invoke();
+    }
+
+    public void RegisterCannonballHit()
+    {
+        if (JumpGameManager.Instance != null)
         {
-            rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
+            JumpGameManager.Instance.RegisterPlayerHit(playerIndex);
         }
 
-        // Draw ground check gizmo in editor
-        void OnDrawGizmosSelected()
+        onCannonballHit?.Invoke();
+    }
+
+    private void Jump()
+    {
+        if (!isGrounded)
         {
-            if (groundCheck != null)
-            {
-                Gizmos.color = Color.yellow;
-                Gizmos.DrawWireSphere(groundCheck.position, groundCheckRadius);
-            }
+            return;
         }
+
+        rb.linearVelocity = new Vector2(
+            rb.linearVelocity.x,
+            jumpForce
+        );
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        if (groundCheck == null)
+        {
+            return;
+        }
+
+        Gizmos.color = Color.yellow;
+
+        Gizmos.DrawWireSphere(
+            groundCheck.position,
+            groundCheckRadius
+        );
+    }
 }
